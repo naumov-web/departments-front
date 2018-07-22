@@ -1,62 +1,64 @@
-import React, { Component } from 'react';
-import Validators from '../../../utils/Validators';
-import {FormGroup, ControlLabel, FormControl} from 'react-bootstrap';
+import React from 'react';
+import FormComponent from '../../form/Form';
+import DepartmentService from '../../../services/DepartmentService';
+import {Link, Redirect} from 'react-router-dom';
+import {FormGroup, ControlLabel, FormControl, Button, Glyphicon} from 'react-bootstrap';
+import Preloader from '../../../shared/preloader/Preloader';
+import './departmentsEdit.css';
 
-class DepartmentEdit extends Component {
-  
-  validator = null;
-  validators = {
-    name: ['required']
-  };
-  
-  constructor(props) {
-    super(props);
-    this.validator = new Validators();
-    this.state = {
-      fields: {}
+class DepartmentEdit extends FormComponent {
+
+    validators = {
+        name: ['required']
     };
-  }
-  
-  getValidationState = (fieldName) => {
-    if (this.validators[fieldName]) {
-      for(let i = 0, len = this.validators[fieldName].length; i < len; i++) {
-        let vn = this.validators[fieldName][i];
-        if (!this.validator[vn](this.state.fields[fieldName] || '')) return 'error';
-      }
+    editModeTitle = 'Редактирование отдела';
+
+    /**
+     * Constructor for component
+     *
+     * @param props
+     */
+    constructor(props) {
+        super(props);
+        this.service = new DepartmentService();
+        this.mergeState({
+            title: 'Добавление отдела'
+        });
     }
-    return 'success';
-  }
-  
-  handleChange = (event, fieldName) => {
-    let f = this.state.fields;
-    f[fieldName] = event.target.value;
-    this.setState({
-      fields: f
-    });
-  }
-  
-  render = () => {
-    return (<div className="DepartmentEdit">
+
+    render = () => {
+        if (this.state.redirectToList)
+            return (<Redirect to="/departments"/>);
+        return (<div className="DepartmentEdit">
+            <h1>{this.state.title}</h1>
             <form>
                 <FormGroup
-                  controlId="formBasicText"
-                  validationState={this.getValidationState('name')}
+                    controlId="formBasicText"
+                    validationState={this.getValidationState('name')}
                 >
-                  <ControlLabel>Наименование отдела</ControlLabel>
-                  <FormControl
-                    type="text"
-                    value={this.state.fields.name || ''}
-                    placeholder="Введите наименование отдела"
-                    onChange={(event) => {this.handleChange(event, 'name')}}
-                  />
-                  <FormControl.Feedback />
+                    <ControlLabel>Наименование отдела</ControlLabel>
+                    <FormControl
+                        type="text"
+                        value={this.state.fields.name || ''}
+                        placeholder="Введите наименование отдела"
+                        onChange={(event) => {
+                            this.handleChange(event, 'name')
+                        }}
+                    />
+                    <FormControl.Feedback/>
                 </FormGroup>
                 <div>
-                    
+                    <Button bsStyle="success" disabled={!this.state.valid} onClick={this.saveEntity}>
+                        <Glyphicon glyph="ok"/> Сохранить
+                    </Button>
+                    <Link to="/departments" className="btn btn-default cancel-link">
+                        <Glyphicon glyph="chevron-left"/> Отмена
+                    </Link>
                 </div>
             </form>
-    </div>);
-  }
+            {this.state.isLoading && <Preloader/>}
+        </div>);
+    }
 }
 
 export default DepartmentEdit;

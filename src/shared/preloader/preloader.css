@@ -1,0 +1,24 @@
+.Preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 60px;
+    color: white;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+    height: 100%;
+}
+.Preloader > span {
+    animation: 1.2s linear 0s normal none infinite running rotate;
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
